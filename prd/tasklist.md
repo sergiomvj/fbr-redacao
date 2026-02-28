@@ -84,7 +84,6 @@ Lista de tarefas derivadas do `implementation-plan.md`, com o mapeamento das ski
   - **Skills:** `backend-dev-guidelines`, `machine-learning-ops-ml-pipeline`
 - [x] **Task 5.10** — Criar integrações externas
   - **Skills:** `backend-dev-guidelines`, `youtube-automation`, `whatsapp-automation`
-  - **Skills:** `backend-dev-guidelines`, `youtube-automation`, `whatsapp-automation`
 
 ## Batch 6 — Frontend Setup
 *Foco na estrutura do WebApp React/Next.js/Tailwind.*
