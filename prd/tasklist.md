@@ -40,33 +40,33 @@ Lista de tarefas derivadas do `implementation-plan.md`, com o mapeamento das ski
 
 ## Batch 3 — Backend Core
 *Foco na fundação da API.*
-- [ ] **Task 3.1** — Criar main.py e core/config.py
+- [x] **Task 3.1** — Criar main.py e core/config.py
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 3.2** — Criar core/database.py e core/redis.py
+- [x] **Task 3.2** — Criar core/database.py e core/redis.py
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 3.3** — Criar core/exceptions.py com exceptions customizadas
+- [x] **Task 3.3** — Criar core/exceptions.py com exceptions customizadas
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 3.4** — Criar core/middleware.py (CORS + rate limiting + auth)
+- [x] **Task 3.4** — Criar core/middleware.py (CORS + rate limiting + auth)
   - **Skills:** `backend-dev-guidelines`, `backend-security-coder`
-- [ ] **Task 3.5** — Criar core/security.py (dependency injection de usuário)
+- [x] **Task 3.5** — Criar core/security.py (dependency injection de usuário)
   - **Skills:** `backend-dev-guidelines`, `backend-security-coder`
-- [ ] **Task 3.6** — Criar domain auth (router + service + schemas)
+- [x] **Task 3.6** — Criar domain auth (router + service + schemas)
   - **Skills:** `backend-dev-guidelines`, `backend-security-coder`
-- [ ] **Task 3.7** — Criar domain regions (router + service + schemas)
+- [x] **Task 3.7** — Criar domain regions (router + service + schemas)
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 3.8** — Criar domain agents (router + service + schemas)
+- [x] **Task 3.8** — Criar domain agents (router + service + schemas)
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 3.9** — Criar domain sources (router + service + schemas)
+- [x] **Task 3.9** — Criar domain sources (router + service + schemas)
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 3.10** — Criar domain articles (router + service + schemas)
+- [x] **Task 3.10** — Criar domain articles (router + service + schemas)
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 3.11** — Criar domain ugc (router + service + schemas)
+- [x] **Task 3.11** — Criar domain ugc (router + service + schemas)
   - **Skills:** `backend-dev-guidelines`, `backend-security-coder`
-- [ ] **Task 3.12** — Criar domain credits, alerts, metrics
+- [x] **Task 3.12** — Criar domain credits, alerts, metrics
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 3.13** — Criar WebSocket endpoints
+- [x] **Task 3.13** — Criar WebSocket endpoints
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 3.14** — Criar health endpoints
+- [x] **Task 3.14** — Criar health endpoints
   - **Skills:** `backend-dev-guidelines`
 
 ## Batch 4 — Backend Workers (Celery)
