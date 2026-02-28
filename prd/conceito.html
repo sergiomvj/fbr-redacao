@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Openclaw × Facebrasil — Arquitetura de Integração</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00e87a;
+    --green-dim: #00b85e;
+    --dark: #080c0f;
+    --dark2: #0d1419;
+    --dark3: #111a20;
+    --border: rgba(0,232,122,0.15);
+    --text: #c8d8e0;
+    --text-dim: #6a8a96;
+    --accent: #00e87a;
+    --red: #ff4f4f;
+    --blue: #4fa3ff;
+    --yellow: #ffe04f;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .logo-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    background: rgba(0,232,122,0.08);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    letter-spacing: 0.1em;
+  }
+  .sep { color: var(--text-dim); }
+  h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  h1 span { color: var(--green); }
+  .subtitle {
+    margin-top: 16px;
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 600px;
+  }
+  .version-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 28px;
+  }
+  .pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 5px 14px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+  .pill.active { border-color: var(--green); color: var(--green); }
+
+  /* SECTIONS */
+  section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  p { color: var(--text); line-height: 1.7; }
+
+  /* ARCHITECTURE DIAGRAM */
+  .arch-diagram {
+    margin-top: 40px;
+    display: grid;
+    gap: 2px;
+  }
+
+  .arch-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 2px;
+    min-height: 64px;
+  }
+
+  .arch-label {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .arch-cells {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 2px;
+  }
+
+  .arch-cell {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .arch-cell:hover {
+    background: var(--dark3);
+    border-color: rgba(0,232,122,0.4);
+  }
+
+  .arch-cell.highlight {
+    border-color: var(--green);
+    background: rgba(0,232,122,0.05);
+  }
+
+  .arch-cell .cell-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+
+  .arch-cell .cell-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  .dot.green { background: var(--green); }
+  .dot.blue { background: var(--blue); }
+  .dot.red { background: var(--red); }
+  .dot.yellow { background: var(--yellow); }
+
+  /* FLOW LAYERS */
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 40px;
+  }
+
+  .layer {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 3px;
+  }
+
+  .layer-info {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    padding: 20px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .layer-info::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--green);
+  }
+
+  .layer-info.blue::before { background: var(--blue); }
+  .layer-info.red::before { background: var(--red); }
+  .layer-info.yellow::before { background: var(--yellow); }
+
+  .layer-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .layer-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+  }
+
+  .layer-nodes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 3px;
+  }
+
+  .node {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    padding: 16px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .node:hover {
+    background: rgba(0,232,122,0.04);
+    border-color: rgba(0,232,122,0.35);
+  }
+
+  .node-icon {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .node-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 3px;
+  }
+
+  .node-tech {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+  }
+
+  /* DATA FLOW */
+  .flow-arrow {
+    text-align: center;
+    padding: 8px 0;
+    color: var(--green);
+    font-size: 20px;
+    opacity: 0.5;
+  }
+
+  /* INTEGRATION TABLE */
+  .int-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 32px;
+  }
+
+  .int-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.08em;
+  }
+
+  .int-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+
+  .int-table tr:hover td { background: rgba(0,232,122,0.02); }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    padding: 2px 8px;
+    border: 1px solid;
+    letter-spacing: 0.05em;
+  }
+  .tag.green { border-color: var(--green); color: var(--green); }
+  .tag.blue { border-color: var(--blue); color: var(--blue); }
+  .tag.yellow { border-color: var(--yellow); color: var(--yellow); }
+  .tag.red { border-color: var(--red); color: var(--red); }
+
+  /* ROADMAP */
+  .roadmap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin-top: 40px;
+  }
+
+  .phase {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .phase::after {
+    content: attr(data-phase);
+    position: absolute;
+    right: -10px;
+    bottom: -20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 80px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.03);
+    line-height: 1;
+  }
+
+  .phase-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  .phase h3 { font-size: 15px; margin-bottom: 12px; }
+
+  .phase-items {
+    list-style: none;
+  }
+
+  .phase-items li {
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .phase-items li::before {
+    content: '→';
+    color: var(--green);
+    flex-shrink: 0;
+  }
+
+  .phase-dur {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* METRICS */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+    margin-top: 40px;
+  }
+
+  .metric {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    padding: 24px 20px;
+  }
+
+  .metric-val {
+    font-family: 'Inter', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .metric-label {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .metric-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    opacity: 0.6;
+  }
+
+  /* TECH STACK */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin-top: 32px;
+  }
+
+  .stack-group {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+
+  .stack-group-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .stack-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 12px;
+  }
+
+  .stack-item:last-child { border-bottom: none; }
+
+  /* API ENDPOINTS */
+  .endpoints {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 32px;
+  }
+
+  .endpoint {
+    display: grid;
+    grid-template-columns: 60px 280px 1fr auto;
+    gap: 2px;
+    align-items: stretch;
+  }
+
+  .ep-method {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 10px;
+  }
+
+  .ep-method.get { color: var(--green); border-color: rgba(0,232,122,0.2); }
+  .ep-method.post { color: var(--blue); border-color: rgba(79,163,255,0.2); }
+  .ep-method.ws { color: var(--yellow); border-color: rgba(255,224,79,0.2); }
+
+  .ep-path {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+  }
+
+  .ep-desc {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+  }
+
+  .ep-owner {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer .f-left {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  footer .f-right {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  /* BLINK */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .blink { animation: blink 1.2s infinite; }
+
+  /* PULSE */
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .live-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+    margin-right: 6px;
+  }
+
+  @media (max-width: 768px) {
+    .roadmap { grid-template-columns: 1fr; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .stack-grid { grid-template-columns: 1fr; }
+    .arch-row { grid-template-columns: 1fr; }
+    .layer { grid-template-columns: 1fr; }
+    .endpoint { grid-template-columns: 60px 1fr; }
+    .ep-desc, .ep-owner { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-row">
+      <span class="logo-tag">OPENCLAW v1.0</span>
+      <span class="sep">×</span>
+      <span class="logo-tag">FACEBRASIL PLATFORM</span>
+    </div>
+    <h1>Arquitetura de<br><span>Integração</span> Completa</h1>
+    <p class="subtitle">Sistema unificado de agentes virtuais para produção, distribuição e monetização de jornalismo hiperlocal para a diáspora brasileira.</p>
+    <div class="version-row">
+      <span class="pill active"><span class="live-dot"></span>CONFIDENCIAL — USO INTERNO</span>
+      <span class="pill">FEV 2026</span>
+      <span class="pill">5 CAMADAS DE INTEGRAÇÃO</span>
+      <span class="pill">50+ CIDADES USA · EDIÇÃO MUNDO</span>
+    </div>
+  </header>
+
+  <!-- VISÃO GERAL DO ECOSSISTEMA -->
+  <section>
+    <div class="section-label">01 — VISÃO SISTÊMICA</div>
+    <h2>O Ecossistema Integrado</h2>
+    <p style="max-width:680px; margin-bottom: 40px;">O Openclaw não é um produto separado do Facebrasil — ele é o motor de produção que alimenta todos os canais do ecossistema a partir de uma única fonte de dados contextualizada e priorizada por IA.</p>
+
+    <div class="arch-diagram">
+      <div class="arch-row">
+        <div class="arch-label">ENTRADA</div>
+        <div class="arch-cells">
+          <div class="arch-cell highlight">
+            <span class="cell-name">🌐 RSS / Web Crawlers</span>
+            <span class="cell-desc">50+ cidades · 24h</span>
+          </div>
+          <div class="arch-cell highlight">
+            <span class="cell-name">📡 APIs de Notícias</span>
+            <span class="cell-desc">AP · Reuters · NewsAPI</span>
+          </div>
+          <div class="arch-cell highlight">
+            <span class="cell-name">📱 Redes Sociais</span>
+            <span class="cell-desc">Twitter · Reddit · local FB</span>
+          </div>
+          <div class="arch-cell highlight">
+            <span class="cell-name">🎙️ Eu Repórter</span>
+            <span class="cell-desc">UGC da comunidade</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="arch-row">
+        <div class="arch-label">OPENCLAW<br>ENGINE</div>
+        <div class="arch-cells">
+          <div class="arch-cell">
+            <span class="cell-name">🤖 Agente Coletor</span>
+            <span class="cell-desc">por cidade/região</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">🧠 Agente Contexto</span>
+            <span class="cell-desc">localização cultural</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">✍️ Agente Roteiro</span>
+            <span class="cell-desc">60–180s scripts</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">🎬 Agente Vídeo</span>
+            <span class="cell-desc">avatar + B-roll</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">📊 Agente Score</span>
+            <span class="cell-desc">priorização por relevância</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="arch-row">
+        <div class="arch-label">FACEBRASIL<br>CORE</div>
+        <div class="arch-cells">
+          <div class="arch-cell">
+            <span class="cell-name">🗃️ CMS Unificado</span>
+            <span class="cell-desc">WordPress Headless</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">👤 User Profiles</span>
+            <span class="cell-desc">localização + prefs</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">💳 Billing Engine</span>
+            <span class="cell-desc">freemium → pago</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">🏆 Gamification</span>
+            <span class="cell-desc">Eu Repórter + créditos</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="arch-row">
+        <div class="arch-label">DISTRIBUIÇÃO</div>
+        <div class="arch-cells">
+          <div class="arch-cell">
+            <span class="cell-name">📱 App Facebrasil</span>
+            <span class="cell-desc">iOS + Android</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">🌐 Portal Web</span>
+            <span class="cell-desc">SEO otimizado</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">▶️ YouTube</span>
+            <span class="cell-desc">canal por cidade</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">📸 Instagram</span>
+            <span class="cell-desc">Reels + Stories</span>
+          </div>
+          <div class="arch-cell">
+            <span class="cell-name">💬 WhatsApp</span>
+            <span class="cell-desc">broadcast groups</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="arch-row">
+        <div class="arch-label">MONETIZAÇÃO</div>
+        <div class="arch-cells">
+          <div class="arch-cell highlight">
+            <span class="cell-name">💰 Subscriptions</span>
+            <span class="cell-desc">$5.99 / $9.99/mês</span>
+          </div>
+          <div class="arch-cell highlight">
+            <span class="cell-name">📢 Advertising</span>
+            <span class="cell-desc">CPM $15–40</span>
+          </div>
+          <div class="arch-cell highlight">
+            <span class="cell-name">🛒 FB Shop</span>
+            <span class="cell-desc">e-commerce integrado</span>
+          </div>
+          <div class="arch-cell highlight">
+            <span class="cell-name">🤝 B2B Parcerias</span>
+            <span class="cell-desc">imigração · telecom · banco</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAMADAS DO OPENCLAW -->
+  <section>
+    <div class="section-label">02 — OPENCLAW ENGINE</div>
+    <h2>As 5 Camadas de Agentes</h2>
+    <p style="max-width:680px; margin-bottom: 8px;">Cada camada é um conjunto de agentes especializados que se comunica via API interna. O processamento é assíncrono e orientado a eventos — uma headline capturada às 3am está no feed do usuário antes das 6am.</p>
+
+    <div class="layers" style="margin-top: 32px;">
+
+      <div class="layer">
+        <div class="layer-info">
+          <div class="layer-num">CAMADA 01</div>
+          <div class="layer-name">COLETA</div>
+          <div style="font-size:11px; color: var(--text-dim); margin-top: 6px;">Agentes Crawlers</div>
+        </div>
+        <div class="layer-nodes">
+          <div class="node">
+            <div class="node-icon">🕷️</div>
+            <div class="node-name">City Crawler</div>
+            <div class="node-tech">Python · Scrapy · RSS</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">📡</div>
+            <div class="node-name">News API Fetcher</div>
+            <div class="node-tech">NewsAPI · GNews · AP</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🐦</div>
+            <div class="node-name">Social Monitor</div>
+            <div class="node-tech">Twitter API · Reddit API</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🔍</div>
+            <div class="node-name">Dedup Engine</div>
+            <div class="node-tech">Similarity hash · Redis</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">⚡</div>
+            <div class="node-name">Priority Queue</div>
+            <div class="node-tech">RabbitMQ · scoring</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="layer">
+        <div class="layer-info blue">
+          <div class="layer-num">CAMADA 02</div>
+          <div class="layer-name">CONTEXTO</div>
+          <div style="font-size:11px; color: var(--text-dim); margin-top: 6px;">Agentes de IA</div>
+        </div>
+        <div class="layer-nodes">
+          <div class="node">
+            <div class="node-icon">🧠</div>
+            <div class="node-name">Relevance Filter</div>
+            <div class="node-tech">Claude API · classificação</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🌎</div>
+            <div class="node-name">Cultural Translator</div>
+            <div class="node-tech">EN→PT + localização BR</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🎯</div>
+            <div class="node-name">Impact Analyzer</div>
+            <div class="node-tech">"o que muda pra você"</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🏷️</div>
+            <div class="node-name">City Tagger</div>
+            <div class="node-tech">geo-tagging · bairro</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">📊</div>
+            <div class="node-name">Sentiment Score</div>
+            <div class="node-tech">urgência · tom · categoria</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="layer">
+        <div class="layer-info yellow">
+          <div class="layer-num">CAMADA 03</div>
+          <div class="layer-name">PRODUÇÃO</div>
+          <div style="font-size:11px; color: var(--text-dim); margin-top: 6px;">Agentes Criadores</div>
+        </div>
+        <div class="layer-nodes">
+          <div class="node">
+            <div class="node-icon">✍️</div>
+            <div class="node-name">Script Writer</div>
+            <div class="node-tech">roteiro 60/120/180s</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🎙️</div>
+            <div class="node-name">TTS Engine</div>
+            <div class="node-tech">ElevenLabs · voz BR</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🎬</div>
+            <div class="node-name">Avatar Producer</div>
+            <div class="node-tech">HeyGen · D-ID · Synthesia</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🖼️</div>
+            <div class="node-name">B-Roll Curator</div>
+            <div class="node-tech">stock + noticiário local</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🎨</div>
+            <div class="node-name">Thumbnail Gen</div>
+            <div class="node-tech">DALL-E 3 · template city</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="layer">
+        <div class="layer-info red">
+          <div class="layer-num">CAMADA 04</div>
+          <div class="layer-name">PERSONALIZAÇÃO</div>
+          <div style="font-size:11px; color: var(--text-dim); margin-top: 6px;">Agentes de Delivery</div>
+        </div>
+        <div class="layer-nodes">
+          <div class="node">
+            <div class="node-icon">👤</div>
+            <div class="node-name">User Profiler</div>
+            <div class="node-tech">cidade · prefs · horário</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🔔</div>
+            <div class="node-name">Push Scheduler</div>
+            <div class="node-tech">FCM · APNs · horário ideal</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">📤</div>
+            <div class="node-name">Multi-Channel Pub</div>
+            <div class="node-tech">app · web · YT · IG · WA</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">📈</div>
+            <div class="node-name">Engagement Tracker</div>
+            <div class="node-tech">views · shares · tempo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="layer">
+        <div class="layer-info">
+          <div class="layer-num">CAMADA 05</div>
+          <div class="layer-name">COMUNIDADE</div>
+          <div style="font-size:11px; color: var(--text-dim); margin-top: 6px;">Eu Repórter + Loop</div>
+        </div>
+        <div class="layer-nodes">
+          <div class="node">
+            <div class="node-icon">📹</div>
+            <div class="node-name">UGC Receiver</div>
+            <div class="node-tech">upload vídeo/áudio/texto</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🛡️</div>
+            <div class="node-name">Content Moderator</div>
+            <div class="node-tech">AI review + humano</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">💵</div>
+            <div class="node-name">Credit Engine</div>
+            <div class="node-tech">$0.50–$2.00 por pauta</div>
+          </div>
+          <div class="node">
+            <div class="node-icon">🔄</div>
+            <div class="node-name">Feedback Loop</div>
+            <div class="node-tech">UGC → Camada 01</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTEGRAÇÃO COM FACEBRASIL -->
+  <section>
+    <div class="section-label">03 — INTEGRAÇÃO FACEBRASIL</div>
+    <h2>Pontos de Integração por Produto</h2>
+    <p style="max-width:680px;">Cada produto existente ou em desenvolvimento do Facebrasil se conecta ao Openclaw via API REST ou WebSocket, consumindo o conteúdo processado e devolvendo dados de engagement que refinam os agentes.</p>
+
+    <table class="int-table">
+      <thead>
+        <tr>
+          <th>PRODUTO</th>
+          <th>COMO INTEGRA</th>
+          <th>O QUE RECEBE DO OPENCLAW</th>
+          <th>O QUE DEVOLVE</th>
+          <th>STATUS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#fff">📱 App Facebrasil</strong></td>
+          <td style="font-size:12px">REST API + WebSocket push</td>
+          <td style="font-size:12px">Feed personalizado por cidade, notificações em tempo real, vídeos formatados para mobile</td>
+          <td style="font-size:12px">Dados de leitura, horário, preferências, localização GPS</td>
+          <td><span class="tag yellow">EM DEV</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">🌐 Portal Web</strong></td>
+          <td style="font-size:12px">WordPress REST API + Webhooks</td>
+          <td style="font-size:12px">Artigos SEO, slugs, categorias, imagens, meta tags, cidade tag</td>
+          <td style="font-size:12px">Pageviews, tempo na página, origem do tráfego</td>
+          <td><span class="tag green">PRIORIDADE 1</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">▶️ YouTube</strong></td>
+          <td style="font-size:12px">YouTube Data API v3</td>
+          <td style="font-size:12px">Vídeo renderizado, título, descrição, tags, thumbnail, capítulos</td>
+          <td style="font-size:12px">Views, watch time, CTR, comentários</td>
+          <td><span class="tag green">PRIORIDADE 1</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">📸 Instagram</strong></td>
+          <td style="font-size:12px">Meta Graph API</td>
+          <td style="font-size:12px">Reel editado (60s), carrossel, stories com texto PT, hashtags BR</td>
+          <td style="font-size:12px">Alcance, saves, shares, perfil de audiência</td>
+          <td><span class="tag blue">FASE 2</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">💬 WhatsApp</strong></td>
+          <td style="font-size:12px">WhatsApp Business API</td>
+          <td style="font-size:12px">Mensagem formatada, link para vídeo completo, resumo 3 bullets</td>
+          <td style="font-size:12px">Cliques no link, opt-outs, resposta a pesquisas rápidas</td>
+          <td><span class="tag green">PRIORIDADE 1</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">🛒 Facebrasil Shop</strong></td>
+          <td style="font-size:12px">Webhook de contexto temático</td>
+          <td style="font-size:12px">Tag de tema da notícia (ex: "mudança no minimum wage" → produtos financeiros)</td>
+          <td style="font-size:12px">Conversões originadas por notícia, ROAS por categoria</td>
+          <td><span class="tag blue">FASE 2</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">💳 Billing / Subscription</strong></td>
+          <td style="font-size:12px">Stripe API + credit engine interno</td>
+          <td style="font-size:12px">Créditos de Eu Repórter aprovados ($0.50–$2.00), status de trial, tier do usuário</td>
+          <td style="font-size:12px">Status de pagamento, tier ativo, histórico de créditos</td>
+          <td><span class="tag green">PRIORIDADE 1</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:#fff">📊 Analytics Dashboard</strong></td>
+          <td style="font-size:12px">BigQuery + Metabase</td>
+          <td style="font-size:12px">Métricas de produção: artigos/dia, cidades cobertas, agentes ativos, custo por vídeo</td>
+          <td style="font-size:12px">KPIs de negócio para ajuste dos agentes</td>
+          <td><span class="tag blue">FASE 2</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- API ENDPOINTS PRINCIPAIS -->
+  <section>
+    <div class="section-label">04 — API INTERNA</div>
+    <h2>Endpoints Principais Openclaw → Facebrasil</h2>
+    <p style="max-width:680px; margin-bottom: 8px;">A comunicação entre o motor Openclaw e os produtos Facebrasil é via API REST com autenticação JWT e WebSockets para eventos em tempo real.</p>
+
+    <div class="endpoints">
+      <div class="endpoint">
+        <div class="ep-method get">GET</div>
+        <div class="ep-path">/api/v1/feed/{city_slug}</div>
+        <div class="ep-desc">Retorna feed personalizado de notícias para uma cidade específica. Suporta paginação e filtros por categoria.</div>
+        <div class="ep-owner">APP · WEB</div>
+      </div>
+      <div class="endpoint">
+        <div class="ep-method get">GET</div>
+        <div class="ep-path">/api/v1/user/{uid}/feed</div>
+        <div class="ep-desc">Feed ultra-personalizado baseado em localização GPS + histórico de consumo do usuário.</div>
+        <div class="ep-owner">APP</div>
+      </div>
+      <div class="endpoint">
+        <div class="ep-method post">POST</div>
+        <div class="ep-path">/api/v1/content/publish</div>
+        <div class="ep-desc">Recebe conteúdo processado do Openclaw e distribui automaticamente para todos os canais configurados.</div>
+        <div class="ep-owner">OPENCLAW</div>
+      </div>
+      <div class="endpoint">
+        <div class="ep-method post">POST</div>
+        <div class="ep-path">/api/v1/ugc/submit</div>
+        <div class="ep-desc">Endpoint do Eu Repórter — recebe vídeo/áudio/texto, inicia pipeline de moderação e creditação.</div>
+        <div class="ep-owner">APP · WEB</div>
+      </div>
+      <div class="endpoint">
+        <div class="ep-method post">POST</div>
+        <div class="ep-path">/api/v1/credits/apply</div>
+        <div class="ep-desc">Aplica crédito ao usuário após UGC aprovado. Integra com Stripe para desconto na próxima fatura.</div>
+        <div class="ep-owner">BILLING</div>
+      </div>
+      <div class="endpoint">
+        <div class="ep-method ws">WS</div>
+        <div class="ep-path">/ws/v1/breaking/{city_slug}</div>
+        <div class="ep-desc">WebSocket para breaking news — push imediato para app e WhatsApp sem esperar ciclo de processamento.</div>
+        <div class="ep-owner">APP · WA</div>
+      </div>
+      <div class="endpoint">
+        <div class="ep-method get">GET</div>
+        <div class="ep-path">/api/v1/cities</div>
+        <div class="ep-desc">Lista todas as cidades ativas com metadata: cobertura, agentes online, última atualização.</div>
+        <div class="ep-owner">APP · WEB</div>
+      </div>
+      <div class="endpoint">
+        <div class="ep-method post">POST</div>
+        <div class="ep-path">/api/v1/engagement/track</div>
+        <div class="ep-desc">Recebe eventos de engagement (view, share, like, time-on-screen) para alimentar o ranker dos agentes.</div>
+        <div class="ep-owner">TODOS</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK TECNOLÓGICA -->
+  <section>
+    <div class="section-label">05 — STACK TECNOLÓGICA</div>
+    <h2>Tecnologias Recomendadas</h2>
+    <p style="max-width:680px; margin-bottom: 8px;">Stack escolhida para equilibrar velocidade de desenvolvimento, custo operacional e capacidade de escalar de 5 para 50+ cidades sem reescrever o core.</p>
+
+    <div class="stack-grid">
+      <div class="stack-group">
+        <div class="stack-group-name">AGENTES / BACKEND</div>
+        <div class="stack-item"><span class="dot green"></span>Python 3.12 — agentes e IA</div>
+        <div class="stack-item"><span class="dot green"></span>FastAPI — API principal</div>
+        <div class="stack-item"><span class="dot green"></span>Celery + Redis — task queue</div>
+        <div class="stack-item"><span class="dot green"></span>RabbitMQ — event bus</div>
+        <div class="stack-item"><span class="dot green"></span>PostgreSQL — dados estruturados</div>
+        <div class="stack-item"><span class="dot green"></span>Elasticsearch — busca de conteúdo</div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-name">IA / MODELOS</div>
+        <div class="stack-item"><span class="dot blue"></span>Claude API — contextualização e roteiro</div>
+        <div class="stack-item"><span class="dot blue"></span>GPT-4o — fallback e tradução</div>
+        <div class="stack-item"><span class="dot blue"></span>ElevenLabs — TTS português BR</div>
+        <div class="stack-item"><span class="dot blue"></span>HeyGen / Synthesia — avatares</div>
+        <div class="stack-item"><span class="dot blue"></span>DALL-E 3 — thumbnails</div>
+        <div class="stack-item"><span class="dot blue"></span>Whisper — transcrição UGC</div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-name">FACEBRASIL APP / CMS</div>
+        <div class="stack-item"><span class="dot yellow"></span>React Native — app iOS + Android</div>
+        <div class="stack-item"><span class="dot yellow"></span>Next.js — portal web SSR</div>
+        <div class="stack-item"><span class="dot yellow"></span>WordPress Headless — CMS editorial</div>
+        <div class="stack-item"><span class="dot yellow"></span>Stripe — billing e créditos</div>
+        <div class="stack-item"><span class="dot yellow"></span>Firebase — push notifications</div>
+        <div class="stack-item"><span class="dot yellow"></span>CloudFlare — CDN + segurança</div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-name">INFRA / CLOUD</div>
+        <div class="stack-item"><span class="dot red"></span>AWS ECS — containers agentes</div>
+        <div class="stack-item"><span class="dot red"></span>S3 — storage de vídeos</div>
+        <div class="stack-item"><span class="dot red"></span>CloudFront — CDN vídeo</div>
+        <div class="stack-item"><span class="dot red"></span>RDS Aurora — banco principal</div>
+        <div class="stack-item"><span class="dot red"></span>ElastiCache Redis — cache/queue</div>
+        <div class="stack-item"><span class="dot red"></span>Terraform — IaC</div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-name">ANALYTICS / BI</div>
+        <div class="stack-item"><span class="dot green"></span>BigQuery — data warehouse</div>
+        <div class="stack-item"><span class="dot green"></span>Metabase — dashboards internos</div>
+        <div class="stack-item"><span class="dot green"></span>Segment — event tracking</div>
+        <div class="stack-item"><span class="dot green"></span>Amplitude — product analytics</div>
+        <div class="stack-item"><span class="dot green"></span>Grafana — monitoring ops</div>
+      </div>
+      <div class="stack-group">
+        <div class="stack-group-name">DISTRIBUIÇÃO EXTERNA</div>
+        <div class="stack-item"><span class="dot blue"></span>YouTube Data API v3</div>
+        <div class="stack-item"><span class="dot blue"></span>Meta Graph API — IG + FB</div>
+        <div class="stack-item"><span class="dot blue"></span>WhatsApp Business API</div>
+        <div class="stack-item"><span class="dot blue"></span>NewsAPI · GNews · AP Wire</div>
+        <div class="stack-item"><span class="dot blue"></span>Scrapy — web crawling</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section>
+    <div class="section-label">06 — ROADMAP DE INTEGRAÇÃO</div>
+    <h2>3 Fases até Escala Global</h2>
+
+    <div class="roadmap">
+      <div class="phase" data-phase="1">
+        <div class="phase-num">FASE 01 · MVP</div>
+        <h3>Fundação + 5 Cidades</h3>
+        <ul class="phase-items">
+          <li>Crawler agent para Orlando, Miami, Boston, Newark, Atlanta</li>
+          <li>Claude API para contextualização e roteiro</li>
+          <li>Avatar básico + TTS português BR</li>
+          <li>Integração WordPress headless + portal web</li>
+          <li>WhatsApp broadcast por cidade</li>
+          <li>YouTube channel por cidade (5 canais)</li>
+          <li>Billing freemium → pago via Stripe</li>
+          <li>User profile com cidade e preferências</li>
+        </ul>
+        <div class="phase-dur">DURAÇÃO: 3 meses · CUSTO EST: $80–120k</div>
+      </div>
+
+      <div class="phase" data-phase="2">
+        <div class="phase-num">FASE 02 · ESCALA USA</div>
+        <h3>25 Cidades + App + UGC</h3>
+        <ul class="phase-items">
+          <li>Expansão para 25 cidades americanas</li>
+          <li>App Facebrasil iOS + Android lançado</li>
+          <li>Lançamento do Eu Repórter + créditos</li>
+          <li>Instagram Reels automatizados</li>
+          <li>Facebrasil Shop integrado ao contexto das notícias</li>
+          <li>Analytics dashboard interno</li>
+          <li>Programa de prêmios e gamificação</li>
+          <li>Primeiras parcerias B2B (advogados de imigração, remessas)</li>
+        </ul>
+        <div class="phase-dur">DURAÇÃO: 6 meses · CUSTO EST: $200–300k</div>
+      </div>
+
+      <div class="phase" data-phase="3">
+        <div class="phase-num">FASE 03 · MUNDO</div>
+        <h3>Edição Global da Diáspora</h3>
+        <ul class="phase-items">
+          <li>Portugal · Reino Unido · Japão</li>
+          <li>Emirados Árabes · Canadá · Austrália</li>
+          <li>Edições especiais por país com contexto local</li>
+          <li>Parcerias com veículos locais em cada país</li>
+          <li>Revenue sharing com Eu Repórteres globais</li>
+          <li>API aberta para parceiros de conteúdo</li>
+          <li>Programa de anúncios self-serve para PMEs brasileiras no exterior</li>
+        </ul>
+        <div class="phase-dur">DURAÇÃO: 9 meses · CUSTO EST: $400–600k</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÉTRICAS ALVO -->
+  <section>
+    <div class="section-label">07 — MÉTRICAS ALVO</div>
+    <h2>KPIs ao Final da Fase 2 (Mês 9)</h2>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-val">25+</div>
+        <div class="metric-label">Cidades Cobertas nos EUA</div>
+        <div class="metric-sub">agentes ativos 24h cada</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">50k+</div>
+        <div class="metric-label">Usuários Ativos Mensais</div>
+        <div class="metric-sub">base atual como piso</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">$350k</div>
+        <div class="metric-label">MRR Projetado</div>
+        <div class="metric-sub">subs + ads + shop</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">200+</div>
+        <div class="metric-label">Vídeos Produzidos/Dia</div>
+        <div class="metric-sub">todos os canais somados</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">3%</div>
+        <div class="metric-label">Conversão Free → Pago</div>
+        <div class="metric-sub">benchmark SaaS mídia</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">$7</div>
+        <div class="metric-label">ARPU Médio/Mês</div>
+        <div class="metric-sub">entre $5.99 e $9.99</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">5k+</div>
+        <div class="metric-label">Eu Repórteres Ativos</div>
+        <div class="metric-sub">UGC gerando créditos</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val">$25</div>
+        <div class="metric-label">CPM Advertising</div>
+        <div class="metric-sub">audiência segmentada BR</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VANTAGEM COMPETITIVA -->
+  <section>
+    <div class="section-label">08 — POSICIONAMENTO</div>
+    <h2>Por que Ninguém Vai Copiar Rápido</h2>
+    <p style="max-width:680px; margin-bottom: 32px;">A vantagem competitiva do Openclaw não está na tecnologia — está nos dados e na comunidade que a tecnologia gera ao longo do tempo.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px;">
+      <div style="background: var(--dark2); border: 1px solid var(--border); padding: 24px;">
+        <h3 style="margin-bottom: 12px;">🗺️ Dados Geográficos Únicos</h3>
+        <p style="font-size:13px;">A cada mês operando, o Openclaw acumula o maior banco de dados de comportamento e preferência da diáspora brasileira por cidade do mundo. Esse ativo não tem preço e leva anos para replicar.</p>
+      </div>
+      <div style="background: var(--dark2); border: 1px solid var(--border); padding: 24px;">
+        <h3 style="margin-bottom: 12px;">🤝 Efeito de Rede Comunitário</h3>
+        <p style="font-size:13px;">O Eu Repórter cria um ciclo virtuoso: mais usuários → mais UGC → conteúdo mais rico → mais usuários. Concorrentes que tentarem entrar depois encontrarão uma comunidade já fidelizada e co-criadora.</p>
+      </div>
+      <div style="background: var(--dark2); border: 1px solid var(--border); padding: 24px;">
+        <h3 style="margin-bottom: 12px;">⚡ Velocidade de Produção</h3>
+        <p style="font-size:13px;">200 vídeos/dia em 25 cidades é impossível com jornalistas humanos a qualquer custo que um concorrente possa pagar. A barreira não é capital — é a integração entre IA, dados locais e contexto cultural que o Openclaw leva tempo para refinar.</p>
+      </div>
+      <div style="background: var(--dark2); border: 1px solid var(--border); padding: 24px;">
+        <h3 style="margin-bottom: 12px;">🔒 Autoridade de Marca</h3>
+        <p style="font-size:13px;">Facebrasil já tem 50-200k de base. O Openclaw transforma essa base em audiência de mídia verificável, o que abre portas para parcerias e anunciantes que jamais considerariam um veículo imigrante sem dados de alcance real.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="f-left">
+      OPENCLAW × FACEBRASIL — ARQUITETURA v1.0<br>
+      <span class="blink">_</span> CONFIDENCIAL — USO INTERNO
+    </div>
+    <div class="f-right">
+      FEVEREIRO 2026<br>
+      PRÓXIMO: PITCH DECK · SPEC TÉCNICA
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
