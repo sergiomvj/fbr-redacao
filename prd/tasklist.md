@@ -87,27 +87,27 @@ Lista de tarefas derivadas do `implementation-plan.md`, com o mapeamento das ski
 
 ## Batch 6 — Frontend Setup
 *Foco na estrutura do WebApp React/Next.js/Tailwind.*
-- [ ] **Task 6.1 a 6.4** — Setup, Design Tokens, Fontes, e Componentes shadcn/ui
+- [x] **Task 6.1 a 6.4** — Setup, Design Tokens, Fontes, e Componentes shadcn/ui
   - **Skills:** `frontend-dev-guidelines`, `ui-skills`, `ui-ux-designer`, `ui-ux-pro-max`
-- [ ] **Task 6.5 a 6.7** — Auth Middleware (iron-session) e Proxy API route
+- [x] **Task 6.5 a 6.7** — Auth Middleware (iron-session) e Proxy API route
   - **Skills:** `frontend-dev-guidelines`, `backend-security-coder`
 - [ ] **Task 6.8 e 6.9** — API lib, WebSockets, Markdown e formatadores
   - **Skills:** `frontend-dev-guidelines`
 
 ## Batch 7 — Frontend — Autenticação
 *Foco na interface de autenticação e proteção de rotas client-side.*
-- [ ] **Task 7.1** — Criar página de login
+- [x] **Task 7.1** — Criar página de login
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`, `frontend-mobile-development-component-scaffold`
 - [ ] **Task 7.2** — Criar useAuth hook e layout de auth
   - **Skills:** `frontend-dev-guidelines`
 
 ## Batch 8 — Frontend — Layout Principal
 *Foco na identidade visual macro e navegação (Sidebar/Header).*
-- [ ] **Task 8.1** — Criar layout da Redação com Sidebar
+- [x] **Task 8.1** — Criar layout da Redação com Sidebar
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`, `ui-ux-designer`, `frontend-mobile-development-component-scaffold`
-- [ ] **Task 8.2** — Criar SidebarNav com badges em tempo real
+- [x] **Task 8.2** — Criar SidebarNav com badges em tempo real
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
-- [ ] **Task 8.3** — Criar Header com perfil do operador
+- [x] **Task 8.3** — Criar Header com perfil do operador
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
 
 ## Batch 9 — Frontend — Murais
