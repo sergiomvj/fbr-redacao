@@ -21,21 +21,21 @@ Lista de tarefas derivadas do `implementation-plan.md`, com o mapeamento das ski
 
 ## Batch 2 — Database (Supabase)
 *Foco na modelagem de banco, RLS e Storage.*
-- [ ] **Task 2.1** — Criar extensions e enum types
+- [x] **Task 2.1** — Criar extensions e enum types
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 2.2** — Criar tabelas: users, plans, regions
+- [x] **Task 2.2** — Criar tabelas: users, plans, regions
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 2.3** — Criar tabelas: sources, agents, agent_logs
+- [x] **Task 2.3** — Criar tabelas: sources, agents, agent_logs
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 2.4** — Criar tabelas: articles, article_versions, article_media
+- [x] **Task 2.4** — Criar tabelas: articles, article_versions, article_media
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 2.5** — Criar tabelas: distributions, ugc_submissions, credits, alerts, metrics
+- [x] **Task 2.5** — Criar tabelas: distributions, ugc_submissions, credits, alerts, metrics
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 2.6** — Criar triggers (updated_at + handle_new_user)
+- [x] **Task 2.6** — Criar triggers (updated_at + handle_new_user)
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 2.7** — Habilitar RLS e criar policies
+- [x] **Task 2.7** — Habilitar RLS e criar policies
   - **Skills:** `backend-security-coder`, `backend-dev-guidelines`
-- [ ] **Task 2.8** — Configurar Supabase Storage buckets
+- [x] **Task 2.8** — Configurar Supabase Storage buckets
   - **Skills:** `backend-dev-guidelines`, `backend-security-coder`
 
 ## Batch 3 — Backend Core

@@ -1,0 +1,2 @@
+INSERT INTO regions (slug, name, country_code, timezone, type) VALUES ('br', 'Brasil', 'BR', 'America/Sao_Paulo', 'country'), ('us', 'United States', 'US', 'America/New_York', 'country') ON CONFLICT (slug) DO NOTHING;
+INSERT INTO plans (name, type, price_usd, features) VALUES ('Basic', 'free', 49.90, '["articles_per_month: 5", "agents: 1"]'), ('Pro', 'pro', 199.90, '["articles_per_month: 50", "agents: 5"]') ON CONFLICT (type) DO NOTHING;
