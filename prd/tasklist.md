@@ -71,18 +71,19 @@ Lista de tarefas derivadas do `implementation-plan.md`, com o mapeamento das ski
 
 ## Batch 4 — Backend Workers (Celery)
 *Foco na comunicação assíncrona baseada no Celery/Redis.*
-- [ ] **Task 4.1 a 4.7** — Configurar app e criar task workers
+- [x] **Task 4.1 a 4.7** — Configurar app e criar task workers
   - **Skills:** `backend-dev-guidelines`
 
 ## Batch 5 — Backend Agentes (LangGraph)
 *Foco na modelagem do LangGraph e integração com LLMs.*
-- [ ] **Task 5.1 e 5.2** — Criar LLM factory e base agent
+- [x] **Task 5.1 e 5.2** — Criar LLM factory e base agent
   - **Skills:** `backend-dev-guidelines`
-- [ ] **Task 5.3** — Criar prompts de todos os agentes
+- [x] **Task 5.3** — Criar prompts de todos os agentes
   - **Skills:** `content-creator`, `copywriting`
-- [ ] **Task 5.4 a 5.9** — Implementar Grafos (Collector, Journalist, Art, Editor, Chief, Moderator)
+- [x] **Task 5.4 a 5.9** — Implementar Grafos (Collector, Journalist, Art, Editor, Chief, Moderator)
   - **Skills:** `backend-dev-guidelines`, `machine-learning-ops-ml-pipeline`
-- [ ] **Task 5.10** — Criar integrações externas
+- [x] **Task 5.10** — Criar integrações externas
+  - **Skills:** `backend-dev-guidelines`, `youtube-automation`, `whatsapp-automation`
   - **Skills:** `backend-dev-guidelines`, `youtube-automation`, `whatsapp-automation`
 
 ## Batch 6 — Frontend Setup
