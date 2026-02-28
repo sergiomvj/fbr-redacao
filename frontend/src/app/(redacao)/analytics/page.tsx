@@ -37,55 +37,55 @@ export default function AnalyticsDashboard() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{kpi.value}</div>
-                            <p className={\`text-xs mt-1 flex items-center gap-1 \${kpi.trendDown ? 'text-destructive' : 'text-emerald-500'}\`}>
-                            {!kpi.trendDown && <ArrowUpRight className="h-3 w-3" />}
-                            {kpi.trend} em relação à semana anterior
-                        </p>
-                    </CardContent>
-          </Card>
-        ))}
-        </div>
-
-      {/* Charts Area */ }
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 border-border/50 shadow-sm">
-            <CardHeader>
-                <CardTitle className="text-lg">Tráfego vs Engajamento</CardTitle>
-            </CardHeader>
-            <CardContent className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={MOCK_CHART} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                        <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => \`\${val / 1000}k\`} />
-                        <Tooltip
-                            contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                        />
-                        <Line type="monotone" dataKey="pageviews" stroke="hsl(var(--primary))" strokeWidth={2} activeDot={{ r: 8 }} />
-                        <Line type="monotone" dataKey="usuarios" stroke="#888" strokeWidth={2} />
-                    </LineChart>
-                </ResponsiveContainer>
-            </CardContent>
-        </Card>
-
-        {/* Top Articles List */}
-        <Card className="border-border/50 shadow-sm flex flex-col">
-            <CardHeader className="pb-3 border-b border-border/50">
-                <CardTitle className="text-lg">Matérias em Destaque</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0 flex-1 flex flex-col">
-                {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="p-4 border-b border-border/50 last:border-0 flex items-center justify-between hover:bg-muted/30 transition-colors">
-                        <div className="overflow-hidden">
-                            <h4 className="text-sm font-medium line-clamp-1">Incêndio de grandes proporções no centro...</h4>
-                            <p className="text-xs text-muted-foreground mt-1">Há 2 horas • Orlando</p>
-                        </div>
-                        <div className="text-sm font-bold ml-4">2.{i}k</div>
-                    </div>
+                            <p className={`text-xs mt-1 flex items-center gap-1 ${kpi.trendDown ? 'text-destructive' : 'text-emerald-500'}`}>
+                                {!kpi.trendDown && <ArrowUpRight className="h-3 w-3" />}
+                                {kpi.trend} em relação à semana anterior
+                            </p>
+                        </CardContent>
+                    </Card>
                 ))}
-            </CardContent>
-        </Card>
-    </div>
-    </div >
-  );
+            </div>
+
+            {/* Charts Area */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="lg:col-span-2 border-border/50 shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="text-lg">Tráfego vs Engajamento</CardTitle>
+                    </CardHeader>
+                    <CardContent className="h-[350px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={MOCK_CHART} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                                <XAxis dataKey="name" stroke="#888" fontSize={12} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `${val / 1000}k`} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
+                                />
+                                <Line type="monotone" dataKey="pageviews" stroke="hsl(var(--primary))" strokeWidth={2} activeDot={{ r: 8 }} />
+                                <Line type="monotone" dataKey="usuarios" stroke="#888" strokeWidth={2} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
+
+                {/* Top Articles List */}
+                <Card className="border-border/50 shadow-sm flex flex-col">
+                    <CardHeader className="pb-3 border-b border-border/50">
+                        <CardTitle className="text-lg">Matérias em Destaque</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0 flex-1 flex flex-col">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="p-4 border-b border-border/50 last:border-0 flex items-center justify-between hover:bg-muted/30 transition-colors">
+                                <div className="overflow-hidden">
+                                    <h4 className="text-sm font-medium line-clamp-1">Incêndio de grandes proporções no centro...</h4>
+                                    <p className="text-xs text-muted-foreground mt-1">Há 2 horas • Orlando</p>
+                                </div>
+                                <div className="text-sm font-bold ml-4">2.{i}k</div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
 }
