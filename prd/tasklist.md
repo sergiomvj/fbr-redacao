@@ -112,40 +112,40 @@ Lista de tarefas derivadas do `implementation-plan.md`, com o mapeamento das ski
 
 ## Batch 9 — Frontend — Murais
 *Foco em listagens, visualização de conteúdo, editor Kanban-like e Real-time.*
-- [ ] **Task 9.1** — Criar ArticleCard com status e presença
+- [x] **Task 9.1** — Criar ArticleCard com status e presença
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`, `frontend-mobile-development-component-scaffold`
-- [ ] **Task 9.2** — Criar ArticleDrawer com editor Markdown
+- [x] **Task 9.2** — Criar ArticleDrawer com editor Markdown
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-designer`, `ui-ux-pro-max`
-- [ ] **Task 9.3** — Criar Mural Em Produção com WebSocket
+- [x] **Task 9.3** — Criar Mural Em Produção com WebSocket
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
-- [ ] **Task 9.4** — Criar Mural Publicados com ações e presença
+- [x] **Task 9.4** — Criar Mural Publicados com ações e presença
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
-- [ ] **Task 9.5** — Criar usePresence hook
+- [x] **Task 9.5** — Criar usePresence hook
   - **Skills:** `frontend-dev-guidelines`
 
 ## Batch 10 — Frontend — Agentes
 *Foco no dashboard e gerenciamento dos agentes de IA.*
-- [ ] **Task 10.1** — Criar Dashboard de Agentes
+- [x] **Task 10.1** — Criar Dashboard de Agentes
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
-- [ ] **Task 10.2** — Criar página de detalhes do agente
+- [x] **Task 10.2** — Criar página de detalhes do agente
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
-- [ ] **Task 10.3** — Criar formulário de novo agente
+- [x] **Task 10.3** — Criar formulário de novo agente
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
 
 ## Batch 11 — Frontend — Eu Repórter
 *Foco em listagem e aprovação de User Generated Content (UGC).*
-- [ ] **Task 11.1** — Criar fila de moderação UGC
+- [x] **Task 11.1** — Criar fila de moderação UGC
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
-- [ ] **Task 11.2** — Criar UGCCard com player e ações
+- [x] **Task 11.2** — Criar UGCCard com player e ações
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`, `frontend-mobile-development-component-scaffold`
 
 ## Batch 12 — Frontend — Regiões, Analytics e Alertas
 *Foco no controle regional e visões analíticas.*
-- [ ] **Task 12.1** — Criar árvore de regiões
+- [x] **Task 12.1** — Criar árvore de regiões
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
-- [ ] **Task 12.2** — Criar página de analytics
+- [x] **Task 12.2** — Criar página de analytics
   - **Skills:** `frontend-dev-guidelines`, `kpi-dashboard-design`, `ui-ux-pro-max`
-- [ ] **Task 12.3** — Criar central de alertas
+- [x] **Task 12.3** — Criar central de alertas
   - **Skills:** `frontend-dev-guidelines`, `ui-ux-pro-max`
 
 ## Batch 13 — Integração Frontend ↔ Backend
