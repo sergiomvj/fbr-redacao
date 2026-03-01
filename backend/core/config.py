@@ -13,9 +13,11 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: str
     SUPABASE_SERVICE_ROLE_KEY: str
 
-    # Network
+    # Network & CORS
     PORT: int = 8000
     HOST: str = "0.0.0.0"
+    ALLOWED_ORIGINS: List[str] = []
+    MAX_UPLOAD_SIZE_MB: int = 50
     
     # Internal Security
     INTERNAL_API_KEY: str | None = None

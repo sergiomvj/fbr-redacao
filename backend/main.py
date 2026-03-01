@@ -9,13 +9,14 @@ def create_app() -> FastAPI:
         openapi_url=f"{settings.API_V1_STR}/openapi.json"
     )
 
-    # Set all CORS enabled origins
+    # CORS: restritivo em produção — configurar ALLOWED_ORIGINS no .env
+    allowed_origins = settings.ALLOWED_ORIGINS if settings.ALLOWED_ORIGINS else ["*"]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"], # In production, this needs to be restricted to frontend URL
+        allow_origins=allowed_origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type", "X-User-Id"],
     )
     
     # Custom error handling and timing middleware

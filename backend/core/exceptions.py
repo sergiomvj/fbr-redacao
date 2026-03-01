@@ -23,3 +23,12 @@ class ValidationError(BaseAppException):
 class DatabaseOperationError(BaseAppException):
     def __init__(self, detail: str = "Ocorreu um erro ao processar os dados na base."):
         super().__init__(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=detail)
+
+class QuotaExceededError(BaseAppException):
+    def __init__(self, detail: str = "Cota de uso excedida. Aguarde antes de enviar novamente."):
+        super().__init__(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=detail)
+
+class UploadRejectedError(BaseAppException):
+    def __init__(self, detail: str = "Arquivo rejeitado. Verifique o tipo e tamanho máximo permitido."):
+        super().__init__(status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, detail=detail)
+
