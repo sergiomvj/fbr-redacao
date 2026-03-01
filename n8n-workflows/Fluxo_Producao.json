@@ -1,0 +1,192 @@
+{
+    "name": "FBR-Redacao: Fluxo de Producao (Jornalista -> Arte -> Editor)",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "fbr-dispatch-pauta",
+                "responseMode": "onReceived",
+                "options": {}
+            },
+            "name": "Webhook (FastAPI -> n8n)",
+            "type": "n8n-nodes-base.webhook",
+            "position": [
+                200,
+                300
+            ],
+            "typeVersion": 1,
+            "webhookId": "dispatch-pauta-fbr"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.OPENCLAW_GATEWAY_URL }}/agent/jornalista/execute",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer {{$env.OPENCLAW_API_KEY}}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "pauta",
+                            "value": "={{ $json.body }}"
+                        }
+                    ]
+                }
+            },
+            "name": "Agente Jornalista",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                400,
+                300
+            ],
+            "typeVersion": 3
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.OPENCLAW_GATEWAY_URL }}/agent/arte/execute",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer {{$env.OPENCLAW_API_KEY}}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "lide",
+                            "value": "={{ $json.lide }}"
+                        }
+                    ]
+                }
+            },
+            "name": "Agente Arte",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                600,
+                300
+            ],
+            "typeVersion": 3
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.OPENCLAW_GATEWAY_URL }}/agent/editor-regional/execute",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer {{$env.OPENCLAW_API_KEY}}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "artigo_pronto",
+                            "value": "={{ $json }}"
+                        }
+                    ]
+                }
+            },
+            "name": "Agente Editor Regional",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                800,
+                300
+            ],
+            "typeVersion": 3
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.FASTAPI_WEBHOOK_URL }}/openclaw/article-produced",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "X-OpenClaw-Webhook-Key",
+                            "value": "={{ $env.OPENCLAW_WEBHOOK_KEY }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "final_article",
+                            "value": "={{ $json }}"
+                        }
+                    ]
+                }
+            },
+            "name": "FastAPI Save Article",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                1000,
+                300
+            ],
+            "typeVersion": 3
+        }
+    ],
+    "connections": {
+        "Webhook (FastAPI -> n8n)": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Jornalista",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agente Jornalista": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Arte",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agente Arte": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Editor Regional",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agente Editor Regional": {
+            "main": [
+                [
+                    {
+                        "node": "FastAPI Save Article",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {}
+}

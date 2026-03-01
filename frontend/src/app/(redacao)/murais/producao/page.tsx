@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Users, AlertCircle } from "lucide-react";
@@ -8,17 +8,11 @@ import { ArticleCard } from "@/components/murais/ArticleCard";
 import { ArticleDrawer } from "@/components/murais/ArticleDrawer";
 import { usePresence } from "@/hooks/usePresence";
 
-const MOCK_DATA = {
-    classifying: [
-        { id: "1", title: "Prefeito de Boston anuncia novo fundo de apoio a empreendedores imigrantes", excerpt: "A nova dotação orçamentária visa fortalecer pequenos negócios locais...", status: "classifying" as const }
-    ],
-    writing: [
-        { id: "2", title: "Como o novo centro comunitário afetará a região leste", excerpt: "Moradores estão divididos sobre o impacto no trânsito e na valorização imobiliária...", status: "writing" as const }
-    ],
-    art: [],
-    review: [
-        { id: "3", title: "Clima Extremo: Cuidados para dirigir na neve este fim de semana", excerpt: "Atenção motoristas: as estradas podem ficar escorregadias durante a madrugada...", status: "review" as const }
-    ]
+type ArticlePipelineData = {
+    classifying: any[];
+    writing: any[];
+    art: any[];
+    review: any[];
 };
 
 const MOCK_CONTENT = `
@@ -35,6 +29,39 @@ As autoridades alertam para a **forte nevasca** prevista para este sábado à no
 export default function MuralProducao() {
     const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
     const { activeUsers } = usePresence("mural-producao");
+    const [pipelineData, setPipelineData] = useState<ArticlePipelineData>({
+        classifying: [],
+        writing: [],
+        art: [],
+        review: []
+    });
+    const [loading, setLoading] = useState(true);
+
+    const fetchPipelineData = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/proxy/articles/production");
+            if (res.ok) {
+                const data = await res.json();
+                // Map API fields ('body' -> 'excerpt') for the Card UI if needed, or backend can return 'excerpt'
+                const mapExcerpt = (arr: any[]) => arr.map(a => ({ ...a, excerpt: a.body ? a.body.substring(0, 100) + '...' : '' }));
+                setPipelineData({
+                    classifying: mapExcerpt(data.classifying || []),
+                    writing: mapExcerpt(data.writing || []),
+                    art: mapExcerpt(data.art || []),
+                    review: mapExcerpt(data.review || [])
+                });
+            }
+        } catch (error) {
+            console.error("Failed to fetch pipeline data", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPipelineData();
+    }, []);
 
     return (
         <div className="space-y-6">
@@ -49,7 +76,9 @@ export default function MuralProducao() {
                         <Users className="h-4 w-4" />
                         <span>{activeUsers.length} online</span>
                     </div>
-                    <Button variant="outline"><RefreshCw className="mr-2 h-4 w-4" /> Atualizar</Button>
+                    <Button variant="outline" onClick={fetchPipelineData} disabled={loading}>
+                        <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} /> Atualizar
+                    </Button>
                     <Button>Nova Pauta Manual</Button>
                 </div>
             </div>
@@ -62,10 +91,10 @@ export default function MuralProducao() {
                     <div className="flex items-center justify-between font-semibold px-1">
                         <div className="flex items-center gap-2">
                             <h3>Collector</h3>
-                            <Badge variant="secondary">{MOCK_DATA.classifying.length}</Badge>
+                            <Badge variant="secondary">{pipelineData.classifying.length}</Badge>
                         </div>
                     </div>
-                    {MOCK_DATA.classifying.map(data => (
+                    {pipelineData.classifying.map(data => (
                         <ArticleCard
                             key={data.id}
                             {...data}
@@ -79,10 +108,10 @@ export default function MuralProducao() {
                     <div className="flex items-center justify-between font-semibold px-1">
                         <div className="flex items-center gap-2">
                             <h3>Journalist</h3>
-                            <Badge variant="secondary">{MOCK_DATA.writing.length}</Badge>
+                            <Badge variant="secondary">{pipelineData.writing.length}</Badge>
                         </div>
                     </div>
-                    {MOCK_DATA.writing.map(data => (
+                    {pipelineData.writing.map(data => (
                         <div key={data.id} className="relative">
                             <div className="absolute inset-0 bg-emerald-500/5 animate-pulse rounded-xl pointer-events-none" />
                             <ArticleCard
@@ -98,10 +127,10 @@ export default function MuralProducao() {
                     <div className="flex items-center justify-between font-semibold px-1">
                         <div className="flex items-center gap-2">
                             <h3>Art</h3>
-                            <Badge variant="secondary">{MOCK_DATA.art.length}</Badge>
+                            <Badge variant="secondary">{pipelineData.art.length}</Badge>
                         </div>
                     </div>
-                    {MOCK_DATA.art.length === 0 && (
+                    {pipelineData.art.length === 0 && (
                         <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed rounded-lg border-muted">
                             <p className="text-sm text-muted-foreground">Fila vazia.</p>
                         </div>
@@ -113,10 +142,10 @@ export default function MuralProducao() {
                     <div className="flex items-center justify-between font-semibold px-1">
                         <div className="flex items-center gap-2">
                             <h3 className="flex items-center gap-2 text-destructive"><AlertCircle className="h-4 w-4" /> Requer Revisão</h3>
-                            <Badge variant="destructive">{MOCK_DATA.review.length}</Badge>
+                            <Badge variant="destructive">{pipelineData.review.length}</Badge>
                         </div>
                     </div>
-                    {MOCK_DATA.review.map(data => (
+                    {pipelineData.review.map(data => (
                         <div key={data.id} className="ring-2 ring-destructive/50 rounded-xl overflow-hidden">
                             <ArticleCard
                                 key={data.id}

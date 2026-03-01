@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/headers';
-import type { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { decryptSession } from '@/lib/session';
 
 export async function middleware(request: NextRequest) {

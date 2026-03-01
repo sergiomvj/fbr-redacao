@@ -1,0 +1,111 @@
+{
+    "name": "FBR-Redacao: Fluxo de Coleta Diaria",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "0 6 * * 1-5"
+                        }
+                    ]
+                }
+            },
+            "name": "Schedule (6 AM)",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "position": [
+                250,
+                300
+            ],
+            "typeVersion": 1
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.OPENCLAW_GATEWAY_URL }}/agent/coletor/execute",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer {{$env.OPENCLAW_API_KEY}}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "action",
+                            "value": "run_morning_scan"
+                        }
+                    ]
+                }
+            },
+            "name": "Chamar Agente Coletor",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                450,
+                300
+            ],
+            "typeVersion": 3
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.FASTAPI_WEBHOOK_URL }}/n8n/cycle-completed",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "X-N8N-Webhook-Key",
+                            "value": "={{ $env.N8N_WEBHOOK_KEY }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "payload",
+                            "value": "={{ $json }}"
+                        }
+                    ]
+                }
+            },
+            "name": "Avisar FastAPI (Mural)",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                650,
+                300
+            ],
+            "typeVersion": 3
+        }
+    ],
+    "connections": {
+        "Schedule (6 AM)": {
+            "main": [
+                [
+                    {
+                        "node": "Chamar Agente Coletor",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Chamar Agente Coletor": {
+            "main": [
+                [
+                    {
+                        "node": "Avisar FastAPI (Mural)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {}
+}

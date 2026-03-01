@@ -26,11 +26,19 @@ class Settings(BaseSettings):
     # Data Layer
     REDIS_URL: str = "redis://redis:6379/0"
     
-    # AI Configs
-    LOCAL_LLM_URL: str | None = None
-    LOCAL_LLM_MODEL: str | None = None
-    OPENAI_API_KEY: str | None = None
-    ANTHROPIC_API_KEY: str | None = None
+    # Openclaw Configs
+    OPENCLAW_GATEWAY_URL: str | None = None
+    OPENCLAW_API_KEY: str | None = None
+    OPENCLAW_WEBHOOK_KEY: str | None = None
+    
+    # N8N Configs
+    N8N_WEBHOOK_URL: str | None = None
+    N8N_API_KEY: str | None = None
+    N8N_WEBHOOK_KEY: str | None = None
+    
+    # FBR Click Configs
+    FBR_CLICK_WEBHOOK_URL: str | None = None
+    FBR_CLICK_BOT_TOKEN: str | None = None
     
     model_config = SettingsConfigDict(
         env_file=".env", 

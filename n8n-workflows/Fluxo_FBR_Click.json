@@ -1,0 +1,66 @@
+{
+    "name": "FBR-Redacao: FBR-Click Hub (Slack/Teams Mappings)",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "fbr-click-actions",
+                "responseMode": "onReceived",
+                "options": {}
+            },
+            "name": "Webhook FBR-Click Button",
+            "type": "n8n-nodes-base.webhook",
+            "position": [
+                200,
+                300
+            ],
+            "typeVersion": 1,
+            "webhookId": "fbr-click-actions"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.FASTAPI_WEBHOOK_URL }}/fbr-click/interaction",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "X-FBR-Click-Token",
+                            "value": "={{ $env.FBR_CLICK_BOT_TOKEN }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "payload",
+                            "value": "={{ $json.body }}"
+                        }
+                    ]
+                }
+            },
+            "name": "Notify FastAPI Central",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                400,
+                300
+            ],
+            "typeVersion": 3
+        }
+    ],
+    "connections": {
+        "Webhook FBR-Click Button": {
+            "main": [
+                [
+                    {
+                        "node": "Notify FastAPI Central",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {}
+}

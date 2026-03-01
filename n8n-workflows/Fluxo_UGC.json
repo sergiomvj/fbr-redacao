@@ -1,0 +1,134 @@
+{
+    "name": "FBR-Redacao: Fluxo UGC Moderation",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "fbr-ugc-received",
+                "responseMode": "onReceived",
+                "options": {}
+            },
+            "name": "Webhook FastAPI UGC",
+            "type": "n8n-nodes-base.webhook",
+            "position": [
+                200,
+                300
+            ],
+            "typeVersion": 1,
+            "webhookId": "fbr-ugc-received"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.OPENCLAW_GATEWAY_URL }}/agent/moderador-ugc/execute",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer {{$env.OPENCLAW_API_KEY}}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "ugc_payload",
+                            "value": "={{ $json.body }}"
+                        }
+                    ]
+                }
+            },
+            "name": "Agente Moderador UGC",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                400,
+                300
+            ],
+            "typeVersion": 3
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "boolean": [
+                        {
+                            "value1": "={{ $json.classification.is_spam }}",
+                            "value2": true
+                        }
+                    ]
+                }
+            },
+            "name": "Is Spam?",
+            "type": "n8n-nodes-base.if",
+            "position": [
+                600,
+                300
+            ],
+            "typeVersion": 1
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.FASTAPI_WEBHOOK_URL }}/fbr-click/interaction",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "action",
+                            "value": "ugc_approved"
+                        },
+                        {
+                            "name": "data",
+                            "value": "={{ $json }}"
+                        }
+                    ]
+                }
+            },
+            "name": "Enviar p/ Esteira (Jornalista)",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                800,
+                400
+            ],
+            "typeVersion": 3
+        }
+    ],
+    "connections": {
+        "Webhook FastAPI UGC": {
+            "main": [
+                [
+                    {
+                        "node": "Agente Moderador UGC",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Agente Moderador UGC": {
+            "main": [
+                [
+                    {
+                        "node": "Is Spam?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Is Spam?": {
+            "main": [
+                [],
+                [
+                    {
+                        "node": "Enviar p/ Esteira (Jornalista)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {}
+}

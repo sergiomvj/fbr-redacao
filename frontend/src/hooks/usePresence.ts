@@ -2,19 +2,37 @@
 
 import { useState, useEffect } from 'react';
 
-// Placeholder hook for WebSocket presence
 export function usePresence(roomId: string) {
     const [activeUsers, setActiveUsers] = useState<string[]>([]);
 
     useEffect(() => {
-        // In a real implementation, this would connect to the FastAPI WebSocket
-        // and join the specific 'roomId' (e.g., 'mural-producao')
+        // Connect to the FastAPI WebSocket endpoint
+        // Assuming the backend is running on ws://localhost:8000
+        const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://127.0.0.1:8000";
+        const ws = new WebSocket(`${wsUrl}/ws/${roomId}`);
 
-        // Mock data
-        setActiveUsers(['Operador Local', 'Editor Chefe']);
+        ws.onopen = () => {
+            console.log(`Connected to presence room ${roomId}`);
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === "presence") {
+                    setActiveUsers(data.users);
+                }
+            } catch (e) {
+                console.error("Invalid WS message", e);
+            }
+        };
+
+        ws.onclose = () => {
+            console.log(`Disconnected from presence room ${roomId}`);
+        };
 
         return () => {
-            // Disconnect logic
+            ws.close();
         };
     }, [roomId]);
 

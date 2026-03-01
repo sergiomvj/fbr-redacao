@@ -44,13 +44,14 @@ TODAS as chamadas a APIs externas (Supabase, Stripe, LLMs, Fal.ai) DEVEM ser awa
 Streaming de respostas de IA via SSE (Server-Sent Events) — nunca aguardar resposta completa para enviar
 Conexões com banco e APIs externas DEVEM ter timeout configurado
 
-Agentes de IA (LangGraph)
+Agentes de IA (OpenClaw FBR)
 
-Agentes DEVEM ser implementados com LangGraph (state machine com nós e transições)
-Cada nó do grafo DEVE ter responsabilidade única e saída tipada
-Respostas do agente DEVEM usar Structured Output (Pydantic models) — nunca texto livre para dados estruturados
-Tools do agente DEVEM ter error handling individual — falha de uma tool não deve derrubar o grafo
-Prompts do agente DEVEM ficar em arquivos separados, nunca hardcoded dentro da lógica
+Agentes NUNCA devem ser implementados com LangGraph, CrewAI ou AutoGen
+Agentes DEVEM ser executados exclusivamente via OpenClaw Gateway em suas próprias instâncias (Pressuposto 1 FBR)
+Todo agente DEVE ser isolado em seu próprio repositório Git
+Todo agente DEVE conter EXATAMENTE 7 arquivos Markdown: SOUL.md, IDENTITY.md, TASKS.md, AGENTS.md, MEMORY.md, TOOLS.md, USER.md
+Nenhum prompt embutido no Python é permitido
+Respostas passadas do OpenClaw para o FastAPI DEVEM usar Structured Output validado via Pydantic
 
 Qualidade de Código
 Funções & Métodos

@@ -28,7 +28,7 @@ def create_app() -> FastAPI:
         
     # Routers inclusion
     from api.router import api_router
-    from websockets.router import router as ws_router
+    from ws.router import router as ws_router
     app.include_router(api_router, prefix=settings.API_V1_STR)
     app.include_router(ws_router, tags=["websockets"])
     

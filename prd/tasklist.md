@@ -69,21 +69,21 @@ Lista de tarefas derivadas do `implementation-plan.md`, com o mapeamento das ski
 - [x] **Task 3.14** — Criar health endpoints
   - **Skills:** `backend-dev-guidelines`
 
-## Batch 4 — Backend Workers (Celery)
-*Foco na comunicação assíncrona baseada no Celery/Redis.*
-- [x] **Task 4.1 a 4.7** — Configurar app e criar task workers
+## Batch 4 — Integrações com Sistema FBR Central
+*Foco na comunicação do Backend com o gateway OpenClaw e orquestrador n8n.*
+- [ ] **Task 4.1 a 4.3** — Criar endpoints de Webhook para receber posts do n8n/OpenClaw
+  - **Skills:** `backend-dev-guidelines`
+- [ ] **Task 4.4** — Criar camada cliente para disparar webhooks pro n8n
   - **Skills:** `backend-dev-guidelines`
 
-## Batch 5 — Backend Agentes (LangGraph)
-*Foco na modelagem do LangGraph e integração com LLMs.*
-- [x] **Task 5.1 e 5.2** — Criar LLM factory e base agent
+## Batch 5 — Agentes FBR (OpenClaw)
+*Foco na declaração dos 7 Markdowns canônicos.*
+- [ ] **Task 5.1** — Estruturar repositório/diretório para os 6 Agentes
   - **Skills:** `backend-dev-guidelines`
-- [x] **Task 5.3** — Criar prompts de todos os agentes
+- [ ] **Task 5.2 a 5.7** — Escrever SOUL.md e prompts de cada Agente da Redação
   - **Skills:** `content-creator`, `copywriting`
-- [x] **Task 5.4 a 5.9** — Implementar Grafos (Collector, Journalist, Art, Editor, Chief, Moderator)
-  - **Skills:** `backend-dev-guidelines`, `machine-learning-ops-ml-pipeline`
-- [x] **Task 5.10** — Criar integrações externas
-  - **Skills:** `backend-dev-guidelines`, `youtube-automation`, `whatsapp-automation`
+- [ ] **Task 5.8** — Estabelecer Integração FBR-Click (Alertas para a Redação)
+  - **Skills:** `backend-dev-guidelines`
 
 ## Batch 6 — Frontend Setup
 *Foco na estrutura do WebApp React/Next.js/Tailwind.*
@@ -150,7 +150,12 @@ Lista de tarefas derivadas do `implementation-plan.md`, com o mapeamento das ski
 
 ## Batch 13 — Integração Frontend ↔ Backend
 *Foco em testes de fluxo End-to-End (E2E).*
-- [ ] **Task 13.1 a 13.6** — Testar fluxos E2E (Login, Pipeline, Presença, Repórter, Alertas, Canais)
+- [x] **Task 13.1** — Testar fluxo E2E (Login)
+- [x] **Task 13.2** — Testar fluxo E2E (Pipeline)
+- [x] **Task 13.3** — Testar fluxo E2E (Presença)
+- [x] **Task 13.4** — Testar fluxo E2E (Repórter)
+- [x] **Task 13.5** — Testar fluxo E2E (Alertas)
+- [ ] **Task 13.6** — Testar fluxo E2E (Canais)
   - **Skills:** `frontend-dev-guidelines`, `backend-dev-guidelines`
 
 ## Batch 14 — Segurança e Hardening

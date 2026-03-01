@@ -1,44 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, ExternalLink, Calendar } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
-const PUBLISHED_MOCK = [
-    {
-        id: "101",
-        title: "Comunidade brasileira se reúne para festival de outono em Nova York",
-        date: "12 Nov 2026, 14:30",
-        region: "Nova Inglaterra",
-        views: "1.2k",
-        status: "live",
-        url: "https://facebrasil.com/..."
-    },
-    {
-        id: "102",
-        title: "Novas regras de imigração: O que muda para estudantes internacionais",
-        date: "12 Nov 2026, 10:15",
-        region: "Nacional (US)",
-        views: "5.8k",
-        status: "live",
-        url: "https://facebrasil.com/..."
-    },
-    {
-        id: "103",
-        title: "Destaques do esporte: Torneio de Jiu-Jitsu atrai centenas em Miami",
-        date: "11 Nov 2026, 18:00",
-        region: "Flórida",
-        views: "890",
-        status: "archived",
-        url: "https://facebrasil.com/..."
-    }
-];
+interface PublishedArticle {
+    id: string;
+    title: string;
+    date: string;
+    region: string;
+    views: number;
+    status: string;
+    url: string;
+}
 
 export default function MuralPublicados() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [articles, setArticles] = useState<PublishedArticle[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchPublishedArticles = async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const res = await fetch('/api/proxy/articles/published');
+            if (!res.ok) throw new Error('Falha ao buscar matérias publicadas');
+            const data = await res.json();
+            setArticles(data);
+        } catch (err: any) {
+            setError(err.message || 'Erro desconhecido');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPublishedArticles();
+    }, []);
+
+    const filteredArticles = articles.filter(article =>
+        article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.id.includes(searchTerm)
+    );
 
     return (
         <div className="space-y-6">
@@ -62,10 +69,25 @@ export default function MuralPublicados() {
                 </div>
                 <Button variant="outline"><Filter className="mr-2 h-4 w-4" /> Filtros</Button>
                 <Button variant="outline"><Calendar className="mr-2 h-4 w-4" /> Últimos 7 dias</Button>
+                <Button variant="outline" onClick={fetchPublishedArticles} disabled={isLoading}>
+                    {isLoading ? 'Atualizando...' : 'Atualizar'}
+                </Button>
             </div>
 
+            {error && (
+                <div className="bg-destructive/10 text-destructive p-4 rounded-md">
+                    {error}
+                </div>
+            )}
+
+            {!isLoading && filteredArticles.length === 0 && !error && (
+                <div className="text-center p-12 border border-dashed rounded-lg text-muted-foreground">
+                    Nenhuma matéria publicada encontrada.
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {PUBLISHED_MOCK.map((article) => (
+                {filteredArticles.map((article) => (
                     <Card key={article.id} className="flex flex-col">
                         <CardHeader className="p-5 pb-3">
                             <div className="flex justify-between items-start mb-2">
@@ -82,7 +104,7 @@ export default function MuralPublicados() {
                         </CardHeader>
                         <CardContent className="p-5 pt-0 flex-1">
                             <div className="flex items-center justify-between text-sm text-muted-foreground mt-4">
-                                <span>{article.date}</span>
+                                <span>{new Date(article.date).toLocaleDateString()}</span>
                                 <span><strong className="text-foreground">{article.views}</strong> visualizações</span>
                             </div>
                         </CardContent>
