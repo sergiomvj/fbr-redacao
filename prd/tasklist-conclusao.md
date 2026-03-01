@@ -46,9 +46,9 @@ Este documento centraliza as tarefas **novas e remanescentes** para levar o proj
 
 ## 4. Testes e Deploy E2E
 
-- [ ] **Task 4.1** — **Flow Test do Pipeline Completo**
+- [x] **Task 4.1** — **Flow Test do Pipeline Completo**
   - Acompanhar visualmente um Artigo do Crawler até o Mural de Publicados, monitorando a rede n8n -> OpenClaw -> FastAPI -> Frontend Next.js.
-- [ ] **Task 4.2** — **Implantação na Hostinger (VPS FBR)**
-  - Instalar FastAPI e Next.js via Docker Compose + Tailscale na rede restrita.
+- [x] **Task 4.2** — **Implantação na Hostinger (VPS FBR)**
+  - Backend (FastAPI + Redis) via Docker Compose + frontend Next.js via PM2 modo cluster + nginx + HTTPS.
 - [ ] **Task 4.3** — **Smoke Test Produtivo**
   - Realizar postagem via n8n real em ambiente externo para validar firewalls e comunicação Supabase.

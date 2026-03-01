@@ -155,7 +155,7 @@ Lista de tarefas derivadas do `implementation-plan.md`, com o mapeamento das ski
 - [x] **Task 13.3** — Testar fluxo E2E (Presença)
 - [x] **Task 13.4** — Testar fluxo E2E (Repórter)
 - [x] **Task 13.5** — Testar fluxo E2E (Alertas)
-- [ ] **Task 13.6** — Testar fluxo E2E (Canais)
+- [x] **Task 13.6** — Testar fluxo E2E (Canais)
   - **Skills:** `frontend-dev-guidelines`, `backend-dev-guidelines`
 
 ## Batch 14 — Segurança e Hardening

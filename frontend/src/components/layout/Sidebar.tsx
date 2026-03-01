@@ -10,7 +10,8 @@ import {
     Activity,
     Bell,
     FileCheck,
-    LayoutDashboard
+    LayoutDashboard,
+    Radio
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -28,6 +29,7 @@ const GERENCIAMENTO_ROUTES = [
 const ANALISE_ROUTES = [
     { href: "/redacao/analytics", label: "Analytics", icon: Activity },
     { href: "/redacao/alertas", label: "Alertas", icon: Bell, badge: 3, alert: true },
+    { href: "/redacao/canais", label: "Canais", icon: Radio },
 ];
 
 export function Sidebar() {

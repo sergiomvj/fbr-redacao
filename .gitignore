@@ -1,8 +1,49 @@
-supabase_status.txt
-supabase_status_utf8.txt
-supabase_status.json
-.env
-.env.local
+# Env files
+.env
+.env.local
+.env*.local
+
+# Logs
+*.log
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Node
+node_modules/
+.next/
+out/
+.turbo/
+
+# Docker volumes / override local
+docker-compose.override.yml
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Supabase local
+supabase_status.txt
+supabase_status_utf8.txt
+supabase_status.json
 
 # OpenClaw Isolated Agent Repositories
-openclaw-agents/
+openclaw-agents/
+
+# Scripts de debug temporários
+test_webhook.py
+ecosystem.config.js
+deploy.sh
