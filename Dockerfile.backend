@@ -1,0 +1,34 @@
+# ============================================================
+# Dockerfile raiz — Easypanel App Service (Backend FastAPI)
+#
+# Para criar o serviço de API no Easypanel apontando para
+# a subpasta do monorepo, configure o "Dockerfile Path"
+# deste serviço para: Dockerfile.backend
+# ============================================================
+
+# ---- Builder ----
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+COPY backend/requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+# ---- Runner ----
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Copia dependências instaladas no builder
+COPY --from=builder /root/.local /root/.local
+ENV PATH=/root/.local/bin:$PATH
+
+# Copia código fonte da subpasta
+COPY backend/ .
+
+EXPOSE 8000
+
+# Healthcheck interno via python http client (imagem slim nao traz curl)
+HEALTHCHECK --interval=30s --timeout=3s \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
