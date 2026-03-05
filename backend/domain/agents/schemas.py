@@ -15,3 +15,8 @@ class AgentResponse(AgentBase):
     created_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
+
+class AgentRunRequest(BaseModel):
+    agent_id: uuid.UUID
+    region_id: uuid.UUID
+    query_override: Optional[str] = None

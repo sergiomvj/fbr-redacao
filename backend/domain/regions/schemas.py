@@ -9,6 +9,7 @@ class RegionBase(BaseModel):
     country_code: Optional[str] = None
     timezone: Optional[str] = None
     type: str
+    search_keywords: Optional[str] = None
 
 class RegionResponse(RegionBase):
     id: uuid.UUID
