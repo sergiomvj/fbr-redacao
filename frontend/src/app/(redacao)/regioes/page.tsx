@@ -1,55 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronRight, ChevronDown, MapPin, Database, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-const REGIONS_MOCK = [
-    {
-        id: "br",
-        name: "Brasil (Nacional)",
-        level: "país",
-        children: [
-            {
-                id: "br-sp",
-                name: "São Paulo",
-                level: "estado",
-                children: [
-                    { id: "br-sp-capital", name: "São Paulo (Capital)", level: "cidade", sources: 12 },
-                    { id: "br-sp-campinas", name: "Campinas", level: "cidade", sources: 4 },
-                ]
-            },
-            {
-                id: "br-rj",
-                name: "Rio de Janeiro",
-                level: "estado",
-                children: []
-            }
-        ]
-    },
-    {
-        id: "us",
-        name: "Estados Unidos (Nacional)",
-        level: "país",
-        children: [
-            {
-                id: "us-fl",
-                name: "Flórida",
-                level: "estado",
-                children: [
-                    { id: "us-fl-orl", name: "Orlando", level: "cidade", sources: 25 },
-                    { id: "us-fl-mia", name: "Miami", level: "cidade", sources: 18 },
-                ]
-            }
-        ]
-    }
-];
-
 export default function RegioesTree() {
-    const [expanded, setExpanded] = useState<Record<string, boolean>>({ br: true, us: true, "br-sp": true, "us-fl": true });
+    const [regions, setRegions] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+    const fetchRegions = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/proxy/regions/tree");
+            if (res.ok) {
+                const data = await res.json();
+                setRegions(data);
+                // Expand root nodes by default
+                const initialExpanded: Record<string, boolean> = {};
+                data.forEach((r: any) => { initialExpanded[r.id] = true; });
+                setExpanded(initialExpanded);
+            }
+        } catch (error) {
+            console.error("Failed to fetch regions", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchRegions();
+    }, []);
 
     const toggleExpand = (id: string) => {
         setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
@@ -74,13 +58,13 @@ export default function RegioesTree() {
                         )}
                         <MapPin className="h-4 w-4 text-primary/70" />
                         <span className="font-medium text-sm">{node.name}</span>
-                        <Badge variant="outline" className="text-[10px] font-normal h-4 px-1.5 ml-2 uppercase opacity-70">{node.level}</Badge>
+                        <Badge variant="outline" className="text-[10px] font-normal h-4 px-1.5 ml-2 uppercase opacity-70">{node.type || node.level}</Badge>
                     </div>
 
                     <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {node.sources !== undefined && (
+                        {node.sources_count !== undefined && (
                             <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                <Database className="h-3 w-3" /> {node.sources} fontes
+                                <Database className="h-3 w-3" /> {node.sources_count} fontes
                             </span>
                         )}
                         <Button variant="ghost" size="icon" className="h-6 w-6"><Plus className="h-3 w-3" /></Button>
@@ -116,7 +100,9 @@ export default function RegioesTree() {
                         </div>
                     </CardHeader>
                     <CardContent className="p-2 py-4">
-                        {REGIONS_MOCK.map(rootNode => renderNode(rootNode))}
+                        {loading && <p className="p-4 text-sm text-muted-foreground">Carregando estrutura...</p>}
+                        {!loading && regions.length === 0 && <p className="p-4 text-sm text-muted-foreground">Nenhuma região cadastrada.</p>}
+                        {regions.map(rootNode => renderNode(rootNode))}
                     </CardContent>
                 </Card>
 

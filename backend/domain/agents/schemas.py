@@ -5,14 +5,13 @@ from datetime import datetime
 
 class AgentBase(BaseModel):
     name: str
-    role: str # enum: collector, journalist, url_extractor, etc
-    model: str
-    temperature: float = 0.7
+    role: str # enum: collector, journalist, art, regional_editor, chief_editor, moderator
+    status: str # enum: online, offline, error, paused
+    llm: str # enum: local, claude, gpt4o
+    region: Optional[str] = None
 
 class AgentResponse(AgentBase):
     id: uuid.UUID
-    is_active: bool
-    system_prompt: Optional[str] = None
     created_at: datetime
     
     model_config = ConfigDict(from_attributes=True)

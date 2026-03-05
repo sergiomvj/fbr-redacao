@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     
     # N8N Configs
     N8N_WEBHOOK_URL: str | None = None
+    N8N_BASE_WEBHOOK_URL: str | None = None
     N8N_API_KEY: str | None = None
     N8N_WEBHOOK_KEY: str | None = None
     

@@ -34,7 +34,7 @@ export default function AutenticacaoLogin() {
             }
 
             // Redirect to dashboard
-            router.push("/redacao/murais/producao");
+            router.push("/murais/producao");
             router.refresh();
         } catch (err) {
             setError("Falha de rede.");

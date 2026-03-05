@@ -41,7 +41,7 @@ def create_admin(email, password):
             supabase.table("users").insert({
                 "auth_id": user_id,
                 "email": email,
-                "role": "admin",
+                "role": "operator",
                 "full_name": "Administrador Inicial"
             }).execute()
             print("Perfil criado na tabela 'users'.")

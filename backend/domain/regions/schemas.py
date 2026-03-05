@@ -20,5 +20,6 @@ class RegionResponse(RegionBase):
     
 class RegionTree(RegionResponse):
     children: List['RegionTree'] = []
+    sources_count: int = 0
     
     model_config = ConfigDict(from_attributes=True)
